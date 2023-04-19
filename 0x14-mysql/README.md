@@ -1,1 +1,1 @@
-# Solutions to tasks on MySQL
+# Solutions to tasks on MySQL.
