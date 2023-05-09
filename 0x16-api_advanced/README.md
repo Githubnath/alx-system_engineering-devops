@@ -157,4 +157,4 @@ wintermancer@lapbox ~/reddit_api/project $
 ---
 
 ## Author
-* **Robinson Montes** - [mecomonteshbtn](https://github.com/mecomonteshbtn)
+* **Nathaniel Emenike** - [Githubnath](https://github.com/Githubnath)

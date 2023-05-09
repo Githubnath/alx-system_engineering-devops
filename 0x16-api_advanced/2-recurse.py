@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Sep 17 11:47:53 2020
+Created on Tue May 9  22:47:53 2023
 
-@author: Robinson Montes
+@author: Nathaniel Emenike
 """
 from json import loads
 from requests import get
