@@ -1,29 +1,33 @@
 #!/usr/bin/python3
-"""
-Created on Tue  May  9 22:47:53 2023
 
-@author: Nathaniel Emenike
 """
-from json import loads
+prints the titles of the first 10 hot posts listed for a given subreddit
+"""
+
 from requests import get
 
 
 def top_ten(subreddit):
-    """queries the Reddit API and prints the titles of the first 10 hot posts
-    listed for a given subreddit.
     """
-    url = 'https://www.reddit.com/r/{}/hot.json'.format(subreddit)
-    headers = {
-        'User-Agent':
-        'Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) \
-        Gecko/20100401 Firefox/3.6.3 (FM Scene 4.6.1)'
-    }
-    response = get(url, headers=headers, allow_redirects=False)
-    reddits = response.json()
+    function that queries the Reddit API and prints the titles of the first
+    10 hot posts listed for a given subreddit
+    """
+
+    if subreddit is None or not isinstance(subreddit, str):
+        print("None")
+
+    user_agent = {'User-agent': 'Google Chrome Version 81.0.4044.129'}
+    params = {'limit': 10}
+    url = 'https://www.reddit.com/r/{}/hot/.json'.format(subreddit)
+
+    response = get(url, headers=user_agent, params=params)
+    results = response.json()
 
     try:
-        children = reddits.get('data').get('children')
-        for i in range(10):
-            print(children[i].get('data').get('title'))
-    except:
-        print('None')
+        my_data = results.get('data').get('children')
+
+        for i in my_data:
+            print(i.get('data').get('title'))
+
+    except Exception:
+        print("None")

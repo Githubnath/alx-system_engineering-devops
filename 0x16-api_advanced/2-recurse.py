@@ -1,33 +1,28 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue May 9  22:47:53 2023
-
-@author: Nathaniel Emenike
+Using reddit's API
 """
-from json import loads
-from requests import get
+import requests
+after = None
 
 
 def recurse(subreddit, hot_list=[]):
-    """recursive function that queries the Reddit API and returns a list
-    containing the titles of all hot articles for a given subreddit. If no
-    results are found for the given subreddit, the function should return None.
-    """
-    url = 'https://www.reddit.com/r/{}/hot.json'.format(subreddit)
-    headers = {
-        'User-Agent':
-        'Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.2.3) \
-        Gecko/20100401 Firefox/3.6.3 (FM Scene 4.6.1)'
-    }
-    response = get(url, headers=headers, allow_redirects=False)
-    reddits = response.json()
+    """returning top ten post titles recursively"""
+    global after
+    user_agent = {'User-Agent': 'api_advanced-project'}
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    parameters = {'after': after}
+    results = requests.get(url, params=parameters, headers=user_agent,
+                           allow_redirects=False)
 
-    try:
-        children = reddits.get('data').get('children')
-        for title in children:
-            hot_list.append(title.get('data').get('title'))
+    if results.status_code == 200:
+        after_data = results.json().get("data").get("after")
+        if after_data is not None:
+            after = after_data
+            recurse(subreddit, hot_list)
+        all_titles = results.json().get("data").get("children")
+        for title_ in all_titles:
+            hot_list.append(title_.get("data").get("title"))
         return hot_list
-    except:
-        print(None)
-        return 0
+    else:
+        return (None)
