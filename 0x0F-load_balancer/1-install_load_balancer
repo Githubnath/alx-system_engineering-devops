@@ -11,11 +11,11 @@ cp  /etc/haproxy/haproxy.cfg  /etc/haproxy/haproxy.cfg-org
 
 # Listen to web1 and web2 servers                                                                                                                                                                                                                                       
 echo  "
-frontend www-http
+frontend www-http myfrontend
    	 bind *:80
    	 mode http
-   	 default_backend apache
-backend	 apache
+   	 default_backend web_servers
+backend	 web_servers
 	mode http
 	 balance roundrobin
    server 109732-web-01 54.152.60.211:80 check
