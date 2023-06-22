@@ -1,32 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Create a script to install and configure HAProxy on lb-01 server
+# Configure HAProxy to send traffic to web-01 and web-02 servers
+# Distribute requests using a roundrobin algorithm
+# Make sure that HAProxy can be managed via an init script
+# Install and configure HAproxy on my lb-01 server.
+sudo apt-get -y update
+apt-get -y install haproxy
 
-# Install HAProxy
-sudo apt update
-sudo apt install -y haproxy=2.8\*
+# edit config file
+server_config=\
+"
+frontend  emenike-frontend
+        bind *:80
+        mode http
+        default_backend emenike-backend
+backend emenike-backend
+        balance roundrobin
+        server 109732-web-01 54.152.60.211:80 check
+        server 109732-web-02 34.204.81.197:80 check
+"
+echo "$server_config" | sudo tee -a /etc/haproxy/haproxy.cfg
 
-# Configure HAProxy
-sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.backup
-sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOT
-global
-    daemon
-    maxconn 256
+# enable haproxy to be started by init script
 
-defaults
-    mode http
-    timeout connect 5000ms
-    timeout client 50000ms
-    timeout server 50000ms
+echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
 
-frontend http-in
-    bind *:80
-    default_backend servers
-
-backend servers
-    balance roundrobin
-    server 109732-web-01 <web-01-54.152.60.211>:80 check
-    server 109732-web-02 <web-02-34.204.81.197>:80 check
-EOT
-
-# Restart HAProxy service
-sudo service haproxy restart
-                                                                               
+sudo service haproxy restart                                                  
