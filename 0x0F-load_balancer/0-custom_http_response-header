@@ -1,9 +1,35 @@
 #!/usr/bin/env bash
-# Script that configures Nginx server with a custom header
-apt-get -y update
-apt-get -y install nginx
-echo "Hello World!" > /var/www/html/index.nginx-debian.html
-echo "Ceci n'est pas une page" > /usr/share/nginx/html/custom_404.html
-sed -i "s/server_name _;/server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/Githubnath  permanent;\n\n\terror_page 404 \/custom_404.html;\n\tlocation = \/custom_404.html {\n\t\troot \/usr\/share\/nginx\/html;\n\t\tinternal;\n\t}/" /etc/nginx/sites-available/default
-sed -i "s/include \/etc\/nginx\/sites-enabled\/\*;/include \/etc\/nginx\/sites-enabled\/\*;\n\tadd_header X-Served-By \"$HOSTNAME\";/" /etc/nginx/nginx.conf
-service nginx start
+# Configure Nginx server with a custom header
+# configures web-02 to be identical to web-01
+
+sudo apt-get -y update
+sudo apt-get -y install nginx
+sudo service nginx start
+
+sudo sh -c 'echo "Hello World!" > /var/www/html/index.nginx-debian.html'
+echo "Ceci n'est pas une page" | sudo tee /usr/share/nginx/html/custom_404.html
+sudo sh -c 'printf %s "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    add_header X-Served-By $HOSTNAME;
+    root   /var/www/html;
+    index  index.html index.htm;
+
+    location /redirect_me {
+        return 301 http://google.com/;
+    }
+
+    location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        try_files $uri $uri/ =404;
+    }
+
+    error_page 404 /404.html;
+    location /404 {
+      root /var/www/html;
+      internal;
+    }
+}" > /etc/nginx/sites-available/default'
+
+sudo service nginx restart
